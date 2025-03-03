@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perplexity AI Explorer</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --secondary-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-dark: #111827;
+            --bg-card: #1f2937;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #374151;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .app-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #d946ef);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .app-subtitle {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .panel {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        input[type="text"], 
+        input[type="password"],
+        select, 
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="password"]:focus,
+        select:focus, 
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+        
+        button, .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-success {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .card-body {
+            white-space: pre-line;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+        
+        .flash {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid transparent;
+        }
+        
+        .flash-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--secondary);
+            color: #d1fae5;
+        }
+        
+        .flash-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger);
+            color: #fee2e2;
+        }
+        
+        .flash-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #dbeafe;
+        }
+        
+        .model-badge {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+            border: 2px dashed var(--border);
+            border-radius: 1rem;
+        }
+        
+        .empty-state-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .api-key-form {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .settings-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .settings-toggle:hover {
+            color: var(--text-light);
+        }
+        
+        .settings-content {
+            display: none;
+        }
+        
+        .settings-content.active {
+            display: block;
+        }
+        
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .api-status.connected {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #d1fae5;
+        }
+        
+        .api-status.disconnected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #fee2e2;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.connected {
+            background-color: var(--secondary);
+        }
+        
+        .status-dot.disconnected {
+            background-color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">Perplexity AI Explorer</h1>
+            <p class="app-subtitle">Search, explore, and process AI-generated content</p>
+        </header>
+        
+        <!-- Flash Messages -->
+        {% if get_flashed_messages() %}
+        <div class="flash-messages">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="container">
+            <!-- Left Panel (Search & Settings) -->
+            <div class="left-panel">
+                <!-- Search Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Search</h2>
+                        <div class="api-status {% if api_key_set %}connected{% else %}disconnected{% endif %}">
+                            <span class="status-dot {% if api_key_set %}connected{% else %}disconnected{% endif %}"></span>
+                            {% if api_key_set %}API Connected{% else %}API Disconnected{% endif %}
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        <div class="form-group">
+                            <label for="query">Enter your question:</label>
+                            <textarea id="query" name="query" rows="4" required placeholder="What would you like to know?"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="model">Select Model:</label>
+                            <select id="model" name="model">
+                                <option value="sonar-deep-research" selected>sonar-deep-research (128k)</option>
+                                <option value="sonar-reasoning-pro">sonar-reasoning-pro (128k)</option>
+                                <option value="sonar-reasoning">sonar-reasoning (128k)</option>
+                                <option value="sonar-pro">sonar-pro (200k)</option>
+                                <option value="sonar">sonar (128k)</option>
+                                <option value="r1-1776">r1-1776 (128k)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+                    
+                    <!-- API Key and Website Settings -->
+                    <div class="api-key-form">
+                        <button type="button" class="settings-toggle" onclick="toggleSettings()">
+                            <span>⚙️</span> Settings
+                        </button>
+                        <div class="settings-content" id="settings-content">
+                            <form method="post">
+                                <div class="form-group">
+                                    <label for="api_key">Perplexity API Key:</label>
+                                    <input type="password" id="api_key" name="api_key" placeholder="Enter your Perplexity API key" />
+                                    <small style="display: block; margin-top: 0.5rem; color: var(--text-muted);">
+                                        Get your API key from <a href="https://www.perplexity.ai/settings/api" target="_blank" style="color: var(--primary);">Perplexity AI</a>
+                                    </small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="website_url">Your Website URL:</label>
+                                    <input type="text" id="website_url" name="website_url" placeholder="https://example.com" />
+                                    <small style="display: block; margin-top: 0.5rem; color: var(--text-muted);">
+                                        This will be used in the search template for finding internal links
+                                    </small>
+                                </div>
+                                <button type="submit" name="save_settings" class="btn btn-primary btn-sm">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Template Helper -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background-color: rgba(99, 102, 241, 0.1); border-radius: 0.5rem; border-left: 4px solid var(--primary);">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Search Template</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 0.75rem;">Use this template to find internal links:</p>
+                        <div style="background-color: rgba(0, 0, 0, 0.2); padding: 0.75rem; border-radius: 0.5rem; font-family: monospace; margin-bottom: 0.75rem;">
+                            Find me <span style="color: #10b981;">10</span> internal links from <span style="color: #f59e0b;" id="template-website">your website</span> and mainly select /specify-url-slug/ links - output in a numbered list including the raw urls - the urls should pertain to <span style="color: #ec4899;">ARTICLE_SUBJECT</span>
+                        </div>
+                        <button type="button" onclick="fillSearchTemplate()" class="btn btn-primary btn-sm">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Selected Items Section -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Selected for Next Stage</h2>
+                    </div>
+                    
+                    <!-- Show proceed button if we have any selections -->
+                    {% if selected_items or selected_urls %}
+                        <div class="actions" style="margin-bottom: 1rem;">
+                            <form method="post" action="{{ url_for('next_stage') }}">
+                                <button type="submit" class="btn btn-success">Proceed to Next Stage</button>
+                            </form>
+                            <form method="post">
+                                <button type="submit" name="clear_selection" class="btn btn-danger">Clear Selection</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Selected URLs Section -->
+                    {% if selected_urls %}
+                        <div style="margin-bottom: 1.5rem;">
+                            <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Selected URLs ({{ selected_urls|length }})</h3>
+                            <div style="background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+                                    {% for url in selected_urls %}
+                                        <li style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
+                                            <span style="word-break: break-all; flex: 1;">
+                                                <a href="{{ url }}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                                                    {{ url }}
+                                                </a>
+                                            </span>
+                                            <form method="post" action="{{ url_for('remove_url') }}" style="margin-left: 1rem;">
+                                                <input type="hidden" name="url" value="{{ url }}">
+                                                <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                                    Remove
+                                                </button>
+                                            </form>
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Selected Items Section -->
+                    {% if selected_items %}
+                        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">Selected Responses</h3>
+                        {% for item in selected_items %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">{{ item.query }}</h3>
+                                    <span class="model-badge">{{ item.model }}</span>
+                                </div>
+                                <div class="card-body">
+                                    {{ item.response[:150] }}...
+                                </div>
+                                <form method="post" class="actions">
+                                    <input type="hidden" name="remove_item" value="{{ loop.index0 }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <!-- Empty state if nothing selected -->
+                    {% if not selected_items and not selected_urls %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No items selected yet</p>
+                            <p>Select items from your search results to include them in the next stage</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Search History</h2>
+                    {% if search_history %}
+                        <form method="post">
+                            <button type="submit" name="clear_history" class="btn btn-danger btn-sm">Clear History</button>
+                        </form>
+                    {% endif %}
+                </div>
+                
+                {% if search_history %}
+                    {% for item in search_history %}
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">{{ item.query }}</h3>
+                                <span class="model-badge">{{ item.model }}</span>
+                            </div>
+                            <div class="card-body">
+                                {{ item.response }}
+                            </div>
+                            
+                            <!-- URL Selection Section -->
+                            {% if item.urls %}
+                                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                    <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-muted);">
+                                        Found {{ item.urls|length }} URLs:
+                                    </h4>
+                                    
+                                    <form method="post" id="url_form_{{ loop.index0 }}" style="margin-bottom: 1rem;">
+                                        <input type="hidden" name="item_index" value="{{ loop.index0 }}">
+                                        <input type="hidden" name="select_urls" value="1">
+                                        
+                                        <div style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem; padding: 0.75rem; background-color: rgba(0, 0, 0, 0.2); border-radius: 0.5rem;">
+                                            {% if item.urls %}
+                                                {% for url in item.urls %}
+                                                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                                        <input type="checkbox" id="url_{{ loop.index }}_{{ loop.index0 }}" 
+                                                               name="url_checkbox" value="{{ url }}" 
+                                                               style="margin-right: 0.5rem;"
+                                                               {% if url in selected_urls %}checked{% endif %}>
+                                                        <label for="url_{{ loop.index }}_{{ loop.index0 }}" 
+                                                               style="font-size: 0.85rem; word-break: break-all; cursor: pointer;">
+                                                            {{ url }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div style="text-align: center; color: var(--text-muted);">
+                                                    No URLs found in this response
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="actions">
+                                            <button type="button" onclick="submitUrlForm({{ loop.index0 }})" class="btn btn-primary btn-sm">
+                                                Add Selected URLs to Next Stage
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endif %}
+                            
+                            <form method="post" class="actions">
+                                <input type="hidden" name="select_item" value="{{ loop.index0 }}">
+                                <button type="submit" class="btn btn-primary btn-sm">Select Entire Response for Next Stage</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🔍</div>
+                        <p>No search history yet</p>
+                        <p>Your search results will appear here</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check for saved settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load API key
+            const savedApiKey = localStorage.getItem('perplexity_api_key');
+            if (savedApiKey) {
+                // If we have a saved API key, show it in the form
+                document.getElementById('api_key').value = savedApiKey;
+                
+                // Also show a message that we're using a saved key
+                const apiStatus = document.querySelector('.api-status');
+                if (apiStatus && apiStatus.classList.contains('disconnected')) {
+                    apiStatus.classList.remove('disconnected');
+                    apiStatus.classList.add('connected');
+                    apiStatus.innerHTML = '<span class="status-dot connected"></span>API Key Loaded';
+                    
+                    // Send the API key to the server
+                    sendSavedApiKey(savedApiKey);
+                }
+            }
+            
+            // Load website URL
+            const savedWebsiteUrl = localStorage.getItem('website_url');
+            if (savedWebsiteUrl) {
+                // If we have a saved website URL, show it in the form
+                document.getElementById('website_url').value = savedWebsiteUrl;
+                
+                // Update the template display
+                updateTemplateWebsite(savedWebsiteUrl);
+            }
+        });
+        
+        // Save settings to localStorage when form is submitted
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.querySelector('[name="save_settings"]')) {
+                // Save API key
+                const apiKey = document.getElementById('api_key').value;
+                if (apiKey) {
+                    localStorage.setItem('perplexity_api_key', apiKey);
+                } else {
+                    localStorage.removeItem('perplexity_api_key');
+                }
+                
+                // Save website URL
+                const websiteUrl = document.getElementById('website_url').value;
+                if (websiteUrl) {
+                    localStorage.setItem('website_url', websiteUrl);
+                    updateTemplateWebsite(websiteUrl);
+                } else {
+                    localStorage.removeItem('website_url');
+                    updateTemplateWebsite('your website');
+                }
+            }
+        });
+        
+        // Update the template website display
+        function updateTemplateWebsite(url) {
+            const templateWebsite = document.getElementById('template-website');
+            if (templateWebsite) {
+                templateWebsite.textContent = url;
+            }
+        }
+        
+        // Fill the search template into the query textarea
+        function fillSearchTemplate() {
+            const queryTextarea = document.getElementById('query');
+            const websiteElement = document.getElementById('template-website');
+            const website = websiteElement ? websiteElement.textContent : 'your website';
+            
+            queryTextarea.value = `Find me 10 internal links from ${website} and mainly select /specify-url-slug/ links - output in a numbered list including the raw urls - the urls should pertain to ARTICLE_SUBJECT`;
+            
+            // Focus the textarea and scroll to it
+            queryTextarea.focus();
+            queryTextarea.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Send saved API key to server
+        function sendSavedApiKey(apiKey) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.style.display = 'none';
+            
+            const apiKeyInput = document.createElement('input');
+            apiKeyInput.type = 'hidden';
+            apiKeyInput.name = 'api_key';
+            apiKeyInput.value = apiKey;
+            
+            const submitButton = document.createElement('input');
+            submitButton.type = 'hidden';
+            submitButton.name = 'save_api_key';
+            submitButton.value = '1';
+            
+            form.appendChild(apiKeyInput);
+            form.appendChild(submitButton);
+            document.body.appendChild(form);
+            
+            form.submit();
+        }
+        
+        function toggleSettings() {
+            const settingsContent = document.getElementById('settings-content');
+            settingsContent.classList.toggle('active');
+        }
+        
+        // Submit URL form with selected checkboxes
+        function submitUrlForm(index) {
+            const form = document.getElementById(`url_form_${index}`);
+            
+            // Check if any checkboxes are selected
+            const checkboxes = form.querySelectorAll('input[name="url_checkbox"]:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('Please select at least one URL to add to the next stage.');
+                return;
+            }
+            
+            // Submit the form
+            form.submit();
+        }
+    </script>
+</body>
+</html>

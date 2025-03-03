@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Stage - Perplexity AI Explorer</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary: #10b981;
+            --secondary-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-dark: #111827;
+            --bg-card: #1f2937;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #374151;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .app-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #d946ef);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .app-subtitle {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        
+        .panel {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        
+        .card-body {
+            white-space: pre-line;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+        
+        .model-badge {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+        
+        .flash {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid transparent;
+        }
+        
+        .flash-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--secondary);
+            color: #d1fae5;
+        }
+        
+        .flash-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger);
+            color: #fee2e2;
+        }
+        
+        .flash-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
+            color: #dbeafe;
+        }
+        
+        .actions {
+            margin: 1.5rem 0;
+        }
+        
+        .export-panel {
+            margin-top: 2rem;
+        }
+        
+        .export-section {
+            margin-bottom: 2rem;
+        }
+        
+        .export-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-family: monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+        }
+        
+        .processing-options {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .processing-options ul {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+        }
+        
+        .processing-options li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1 class="app-title">Next Stage Processing</h1>
+            <p class="app-subtitle">Process and export your selected Perplexity AI responses</p>
+        </header>
+        
+        <!-- Flash Messages -->
+        {% if get_flashed_messages() %}
+        <div class="flash-messages">
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">← Back to Search</a>
+        </div>
+        
+        <!-- Selected URLs Section -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Selected URLs</h2>
+                {% if selected_urls %}
+                    <form method="post" action="{{ url_for('clear_selected_urls') }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Clear All URLs</button>
+                    </form>
+                {% endif %}
+            </div>
+            
+            {% if selected_urls %}
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.75rem;">URLs for Processing ({{ selected_urls|length }})</h3>
+                        <ol style="padding-left: 1.5rem; margin-bottom: 0;">
+                            {% for url in selected_urls %}
+                                <li style="margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <span style="word-break: break-all; flex: 1;">
+                                        <a href="{{ url }}" target="_blank" style="color: var(--primary); text-decoration: none; display: inline-block; max-width: 100%;">
+                                            {{ url }}
+                                        </a>
+                                    </span>
+                                    <form method="post" action="{{ url_for('remove_url') }}" style="margin-left: 1rem; flex-shrink: 0;">
+                                        <input type="hidden" name="url" value="{{ url }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    
+                    <div style="background-color: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--secondary);">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Export Options</h3>
+                        
+                        <div style="margin-top: 1rem;">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">Plain Text (One URL per line)</h4>
+                            <textarea readonly style="height: 150px; font-size: 0.85rem;" id="plain-text-export">{% for url in selected_urls %}{{ url }}
+{% endfor %}</textarea>
+                            <button onclick="copyToClipboard('plain-text-export')" class="btn btn-primary btn-sm" style="margin-top: 0.5rem;">
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">CSV Format</h4>
+                            <textarea readonly style="height: 150px; font-size: 0.85rem;" id="csv-export">URL
+{% for url in selected_urls %}"{{ url }}"
+{% endfor %}</textarea>
+                            <button onclick="copyToClipboard('csv-export')" class="btn btn-primary btn-sm" style="margin-top: 0.5rem;">
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem;">HTML Format</h4>
+                            <textarea readonly style="height: 150px; font-size: 0.85rem;" id="html-export">{% for url in selected_urls %}<a href="{{ url }}">{{ url }}</a>
+{% endfor %}</textarea>
+                            <button onclick="copyToClipboard('html-export')" class="btn btn-primary btn-sm" style="margin-top: 0.5rem;">
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">🔗</div>
+                    <p>No URLs selected yet</p>
+                    <p>Select URLs from your search results to include them here</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Selected Items Section -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Selected Responses</h2>
+            </div>
+            
+            {% if selected_items %}
+                {% for item in selected_items %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">{{ item.query }}</h3>
+                            <span class="model-badge">{{ item.model }}</span>
+                        </div>
+                        <div class="card-body">
+                            {{ item.response }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <p>No responses selected yet</p>
+                    <p>Select entire responses from your search results to include them here</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="panel export-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Export Options</h2>
+            </div>
+            
+            <p>Here you can export your selected items for further processing.</p>
+            
+            <div class="export-section">
+                <h3>JSON Format</h3>
+                <textarea readonly>{{ selected_items | tojson(indent=2) }}</textarea>
+            </div>
+            
+            <div class="export-section">
+                <h3>Text Format</h3>
+                <textarea readonly>{% for item in selected_items %}Query: {{ item.query }}
+Model: {{ item.model }}
+
+{{ item.response }}
+
+-------------------
+{% endfor %}</textarea>
+            </div>
+            
+            <!-- This section can be expanded with actual processing functionality -->
+            <div class="processing-options">
+                <h3>Further Processing</h3>
+                <p>This is where you would implement additional processing steps for the selected items.</p>
+                <p>Potential options include:</p>
+                <ul>
+                    <li>Summarizing the selected responses</li>
+                    <li>Comparing different model outputs</li>
+                    <li>Extracting key information</li>
+                    <li>Generating a report</li>
+                    <li>Saving to a database</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Function to copy text to clipboard
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.style.backgroundColor = 'var(--secondary)';
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.backgroundColor = 'var(--primary)';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
