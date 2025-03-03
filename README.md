@@ -52,7 +52,7 @@ python perplexity_client.py --api-key "your-api-key-here" --query "What is quant
 2. As an environment variable:
 ```bash
 # On Windows
-set PERPLEXITY_API_KEY=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
+set PERPLEXITY_API_KEY=YOUR_API_KEY
 # On macOS/Linux
 export PERPLEXITY_API_KEY=your-api-key-here
 
